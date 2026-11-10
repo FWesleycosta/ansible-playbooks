@@ -17,7 +17,9 @@ argument_specs:
         type: list
         elements: str
       base_apt_cache_valid_time:
-        description: Age of the apt cache, in seconds, before it is refreshed.
+        description: >-
+          Age of the apt cache, in seconds, before it is refreshed.
+          Ignored when the host has no package lists: the cache is refreshed anyway.
         type: int
       base_timezone:
         description: IANA timezone name, for example America/Sao_Paulo.

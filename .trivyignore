@@ -2,3 +2,8 @@
 # That image simulates a virtual machine for Molecule and the lab, systemd must be PID 1,
 # and it is never deployed. Any other Dockerfile added here must run as a non-root user.
 DS-0002
+
+# DS-0026 (no HEALTHCHECK): accepted for tests/images/ubuntu/Dockerfile only.
+# Molecule and the lab manage the container lifecycle, and `systemctl is-system-running`
+# usually reports "degraded" in a container, so a health check would mark a working host as unhealthy.
+DS-0026

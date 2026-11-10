@@ -18,6 +18,7 @@ The [base](../roles/base) role is the reference implementation.
 - `handlers/` exists only when the role restarts or reloads something.
 - `vars/main.yml` holds only internal constants (for example, values per OS family). It has high precedence, so anything a user may override goes to `defaults/main.yml`.
 - Molecule runs from the repository root, which is its project directory: its prerun installs `requirements.yml` from there, without symlinks in the home directory. Molecule runs Ansible with an `ansible.cfg` it generates, so each `molecule.yml` repeats `roles_path` and `collections_path` under `ansible.cfg.defaults`.
+- The Molecule `dependency` step is disabled, and that step is the only one that installs the collections required by the Molecule Docker driver. `requirements.yml` therefore pins them too (`community.docker` and `ansible.posix`); a collection missing there fails in CI even when it exists in a local `.ansible/collections` or `~/.ansible/collections`.
 
 ## Naming
 
@@ -73,14 +74,17 @@ The [base](../roles/base) role is the reference implementation.
 ## Tests
 
 - `make lint` and the pre-commit hooks run `yamllint`, `ansible-lint` and the Vault check.
+- CI (`.github/workflows/ci.yml`) runs `make lint` and `make test` on every pull request and push to `main` and `develop`, plus a security scan of the Dockerfile and the workflows. The `CI result` job is the single check the branch rulesets can require.
 - Each role has a Molecule scenario: create, converge, idempotence, verify, destroy.
 - `verify.yml` checks the end state of the host (package installed, file content), not the tasks that produced it.
 - The scenario overrides some defaults, which proves that the role honours its interface.
+- `prepare.yml` puts the host in the state of a freshly built image (no apt package lists, with a recent `/var/lib/apt/lists` mtime), so the local run and CI exercise the same path whatever the Docker storage driver.
 - Containers cannot test kernel parameters, firewalls, auditd or the system clock. Roles that need them get a virtual machine scenario.
 
 ## Toolchain and versions
 
 - `pyproject.toml` and `uv.lock` pin Python and every tool; `requirements.yml` pins every collection; test images are pinned by digest.
+- GitHub Actions are pinned by full commit SHA, with the version in a comment, and Dependabot proposes updates. Tool images in the workflows are pinned by digest, and the uv and zizmor versions are pinned in the workflow; these are updated by hand.
 - Updates are deliberate: change the version, run `make lint test`, then record it in the changelog.
 
 ## Commits and releases

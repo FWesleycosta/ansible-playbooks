@@ -16,7 +16,7 @@ Defaults are in [defaults/main.yml](defaults/main.yml); types are validated by [
 | --- | --- | --- |
 | `base_packages` | `ca-certificates`, `curl`, `htop`, `tzdata` | Packages installed on every host. Overriding it replaces the whole list |
 | `base_packages_extra` | `[]` | Extra packages added to `base_packages`, usually set per group or host |
-| `base_apt_cache_valid_time` | `3600` | Age of the apt cache, in seconds, before it is refreshed |
+| `base_apt_cache_valid_time` | `3600` | Age of the apt cache, in seconds, before it is refreshed. Ignored when the host has no package lists: the cache is refreshed anyway |
 | `base_timezone` | `Etc/UTC` | IANA timezone name, for example `America/Sao_Paulo` |
 | `base_motd_enabled` | `true` | Write `/etc/motd` |
 | `base_motd_message` | `This host is managed by Ansible...` | Message written to `/etc/motd` |

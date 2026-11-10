@@ -13,6 +13,8 @@ ansible:
 
 # Disabled because the Molecule prerun already installs requirements.yml from the
 # repository root; this step only looks for requirement files inside the scenario.
+# With this step disabled, Molecule does not install the collections that the Docker
+# driver needs, so requirements.yml lists them: community.docker and ansible.posix.
 dependency:
   name: galaxy
   enabled: false

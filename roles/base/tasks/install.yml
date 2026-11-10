@@ -1,7 +1,16 @@
 ---
+# The apt module measures the cache age by the mtime of /var/lib/apt/lists (or of the
+# update-success stamp) and never checks that package lists exist. With no lists, a recent
+# mtime would skip the update and no package would be found, so the update is forced.
+- name: Find the apt package lists
+  ansible.builtin.find:
+    paths: /var/lib/apt/lists
+    patterns: "*_Packages*"
+  register: __base_apt_lists
+
 - name: Install the base and extra packages
   ansible.builtin.apt:
     name: "{{ base_packages + base_packages_extra }}"
     state: present
     update_cache: true
-    cache_valid_time: "{{ base_apt_cache_valid_time }}"
+    cache_valid_time: "{{ base_apt_cache_valid_time if __base_apt_lists.matched > 0 else 0 }}"
