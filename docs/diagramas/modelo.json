@@ -1,0 +1,158 @@
+{
+  "sistema": {
+    "id": "ansible-playbooks",
+    "nome": "ansible-playbooks",
+    "descricao": "Playbooks e papéis Ansible, testados e executados em contêineres locais",
+    "origem": "README.md"
+  },
+  "pessoas": [
+    {
+      "id": "mantenedor",
+      "nome": "Mantenedor",
+      "descricao": "Escreve, testa e opera os playbooks"
+    }
+  ],
+  "externos": [
+    {
+      "id": "github",
+      "nome": "GitHub",
+      "descricao": "Hospeda o código e executa o workflow",
+      "tipo": "sistema",
+      "origem": ".github/workflows/ci.yml"
+    },
+    {
+      "id": "docker-engine",
+      "nome": "Docker Engine local",
+      "descricao": "Executa os contêineres do laboratório e dos testes",
+      "tipo": "sistema",
+      "origem": "lab/compose.yml"
+    },
+    {
+      "id": "registros",
+      "nome": "Registros públicos",
+      "descricao": "PyPI, Ansible Galaxy e Docker Hub: ferramentas, coleções e imagens",
+      "tipo": "sistema",
+      "origem": "requirements.yml"
+    }
+  ],
+  "conteineres": [
+    {
+      "id": "controlador",
+      "nome": "Controlador Ansible",
+      "descricao": "Aplica playbooks e papéis nos hosts do laboratório",
+      "tecnologia": "ansible-core 2.21.6",
+      "origem": "playbooks/site.yml"
+    },
+    {
+      "id": "molecule",
+      "nome": "Testes Molecule",
+      "descricao": "Testa a role base em Ubuntu 24.04 e 26.04",
+      "tecnologia": "Molecule 26.11.0, driver Docker",
+      "origem": "molecule/base/molecule.yml"
+    },
+    {
+      "id": "qualidade",
+      "nome": "Verificações de qualidade",
+      "descricao": "Hooks e make lint; confere se o Vault está cifrado",
+      "tecnologia": "pre-commit, yamllint, ansible-lint, gitleaks",
+      "origem": ".pre-commit-config.yaml"
+    },
+    {
+      "id": "ci",
+      "nome": "Pipeline de CI",
+      "descricao": "Roda make lint, make test e a varredura de segurança",
+      "tecnologia": "GitHub Actions",
+      "origem": ".github/workflows/ci.yml"
+    },
+    {
+      "id": "laboratorio",
+      "nome": "Laboratório",
+      "descricao": "Hosts web-01, web-02 e db-01 para praticar",
+      "tecnologia": "Docker Compose, 3 hosts Ubuntu 24.04 com systemd",
+      "origem": "lab/compose.yml"
+    },
+    {
+      "id": "cofre",
+      "nome": "Cofre do laboratório",
+      "descricao": "Guarda segredos de demonstração cifrados",
+      "tecnologia": "vault.yml, Ansible Vault AES256",
+      "tipo": "banco",
+      "origem": "inventories/lab/group_vars/all/vault.yml"
+    }
+  ],
+  "relacoes": [
+    {
+      "de": "mantenedor",
+      "para": "ansible-playbooks",
+      "rotulo": "Executa pela linha de comando",
+      "tecnologia": "make"
+    },
+    {
+      "de": "mantenedor",
+      "para": "github",
+      "rotulo": "Publica commits e abre pull requests em",
+      "tecnologia": "Git"
+    },
+    {
+      "de": "controlador",
+      "para": "laboratorio",
+      "rotulo": "Aplica os papéis nos hosts do",
+      "tecnologia": "community.docker.docker"
+    },
+    {
+      "de": "controlador",
+      "para": "cofre",
+      "rotulo": "Lê os segredos cifrados do",
+      "tecnologia": "Ansible Vault"
+    },
+    {
+      "de": "qualidade",
+      "para": "cofre",
+      "rotulo": "Confere a cifragem do",
+      "tecnologia": "script bash"
+    },
+    {
+      "de": "molecule",
+      "para": "docker-engine",
+      "rotulo": "Executa contêineres no",
+      "tecnologia": "Docker API"
+    },
+    {
+      "de": "github",
+      "para": "ci",
+      "rotulo": "Dispara o workflow em push e pull request",
+      "tecnologia": "GitHub Actions"
+    },
+    {
+      "de": "controlador",
+      "para": "registros",
+      "rotulo": "Baixa ferramentas, coleções e imagens de",
+      "tecnologia": "HTTPS"
+    }
+  ],
+  "views": [
+    {
+      "id": "contexto",
+      "tipo": "contexto",
+      "titulo": "[Contexto] ansible-playbooks",
+      "arquivo": "contexto",
+      "layout": [
+        [null, null, "github"],
+        ["ansible-playbooks", null, "mantenedor"],
+        ["docker-engine", null, "registros"]
+      ]
+    },
+    {
+      "id": "conteineres",
+      "tipo": "conteineres",
+      "titulo": "[Contêineres] ansible-playbooks",
+      "arquivo": "conteineres",
+      "layout": [
+        [null, null, "mantenedor", null, "github"],
+        ["qualidade", null, "cofre", null, null],
+        ["laboratorio", null, "controlador", "molecule", "ci"],
+        [null, null, "registros", "docker-engine", null]
+      ]
+    }
+  ]
+}

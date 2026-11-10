@@ -13,3 +13,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Local lab with three systemd containers and the `lab` inventory.
 - Ansible Vault pattern and pre-commit hooks: yamllint, ansible-lint, gitleaks and the Vault encryption check.
 - CI with GitHub Actions on pull requests and pushes to `main` and `develop`: `make lint` (plus actionlint), `make test` (Molecule) and a security scan (hadolint, Trivy config and zizmor). Actions pinned by commit SHA and kept up to date by Dependabot.
+- Technical documentation in `docs/` (architecture, CI pipeline, runbooks and decision records, in Brazilian Portuguese), with C4 diagrams and a generated `docs/portal.html`.

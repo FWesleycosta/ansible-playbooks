@@ -1,0 +1,2 @@
+# False positive: minified JavaScript of the library embedded in the generated docs/portal.html
+docs/portal.html:generic-api-key:2699

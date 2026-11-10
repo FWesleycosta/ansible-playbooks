@@ -14,6 +14,7 @@ The [base](../roles/base) role is the reference implementation.
 | `molecule/<role>/` | Molecule scenario of the role, named after it |
 | `tests/images/` | Images used as test hosts |
 | `lab/` | Local lab used by the `lab` inventory |
+| `docs/` | Technical documentation (architecture, CI pipeline, runbooks, decision records) and the C4 diagrams |
 
 - `handlers/` exists only when the role restarts or reloads something.
 - `vars/main.yml` holds only internal constants (for example, values per OS family). It has high precedence, so anything a user may override goes to `defaults/main.yml`.
@@ -74,8 +75,8 @@ The [base](../roles/base) role is the reference implementation.
 ## Tests
 
 - `make lint` and the pre-commit hooks run `yamllint`, `ansible-lint` and the Vault check.
-- CI (`.github/workflows/ci.yml`) runs `make lint` and `make test` on every pull request and push to `main` and `develop`, plus a security scan of the Dockerfile and the workflows. The `CI result` job is the single check the branch rulesets can require.
-- Each role has a Molecule scenario: create, converge, idempotence, verify, destroy.
+- CI (`.github/workflows/ci.yml`) runs on every pull request to `main` or `develop` and on every push to them. The `Lint` job runs actionlint and `make lint`, the `Molecule` job runs `make test`, and the `Security` job runs hadolint on the Dockerfile, a Trivy scan of the configuration files and zizmor on the workflows. The `CI result` job is the single check the branch rulesets can require.
+- Each role has a Molecule scenario: destroy, create, prepare, converge, idempotence, verify, destroy.
 - `verify.yml` checks the end state of the host (package installed, file content), not the tasks that produced it.
 - The scenario overrides some defaults, which proves that the role honours its interface.
 - `prepare.yml` puts the host in the state of a freshly built image (no apt package lists, with a recent `/var/lib/apt/lists` mtime), so the local run and CI exercise the same path whatever the Docker storage driver.
