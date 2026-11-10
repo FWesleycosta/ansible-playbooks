@@ -1,0 +1,150 @@
+---
+# CI: the same `make lint` and `make test` that run locally, plus a security scan.
+# No secrets: the lint checks that vault.yml is encrypted, and Molecule does not use the Vault.
+# Actions are pinned by commit SHA (updated by Dependabot); tool images are pinned by digest,
+# and the uv and zizmor versions are pinned here (updated by hand, like the rest of the toolchain).
+name: CI
+
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # A new push to a pull request cancels the previous run; pushes to main and develop always finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PY_COLORS: "1"
+  ANSIBLE_FORCE_COLOR: "1"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Lint the workflows (actionlint)
+        uses: docker://rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
+        with:
+          args: -color
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.1"
+          enable-cache: true
+          cache-python: true
+
+      - name: Cache the Ansible collections
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .ansible/collections
+          key: ansible-collections-${{ runner.os }}-${{ hashFiles('requirements.yml') }}
+
+      - name: Install the toolchain and the collections
+        run: make setup
+
+      - name: Run yamllint, ansible-lint and the Vault check
+        run: make lint
+
+  molecule:
+    name: Molecule
+    needs: lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.1"
+          enable-cache: true
+          cache-python: true
+
+      - name: Cache the Ansible collections
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .ansible/collections
+          key: ansible-collections-${{ runner.os }}-${{ hashFiles('requirements.yml') }}
+
+      - name: Install the toolchain and the collections
+        run: make setup
+
+      # Builds the test images (Ubuntu 24.04 and 26.04) and runs every Molecule scenario.
+      - name: Run the Molecule scenarios
+        run: make test
+
+  security:
+    name: Security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Lint the test image Dockerfile (hadolint)
+        uses: docker://hadolint/hadolint:v2.15.1@sha256:32dac94127fd60b7b7e3fbfc65e1383b9b5e25c9bfd7b8536de7a539fe68a12d
+        with:
+          entrypoint: /bin/hadolint
+          args: tests/images/ubuntu/Dockerfile
+
+      # Reads trivy.yaml and .trivyignore from the repository root.
+      # The official image is used instead of trivy-action (see GHSA-69fq-xp46-6x23).
+      - name: Scan the configuration files (Trivy)
+        uses: docker://aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb
+        with:
+          args: config --exit-code 1 .
+
+      # Cache off on purpose: this job does not sync uv.lock, so it would save an
+      # incomplete cache under the same key that the lint and Molecule jobs use.
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.1"
+          enable-cache: false
+
+      - name: Audit the workflows (zizmor)
+        run: uvx zizmor@1.32.0 --offline .
+
+  ci-result:
+    name: CI result
+    if: ${{ always() }}
+    needs: [lint, molecule, security]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      # Single required check for the rulesets: fails when any job failed, was cancelled or was skipped.
+      - name: Check the result of every job
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          set -euo pipefail
+          for result in $RESULTS; do
+            if [[ "$result" != "success" ]]; then
+              echo "::error::A required job finished with result: $result"
+              exit 1
+            fi
+          done
+          echo "Every job succeeded."

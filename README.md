@@ -1,5 +1,6 @@
 # ansible-playbooks
 
+[![CI](https://github.com/FWesleycosta/ansible-playbooks/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/FWesleycosta/ansible-playbooks/actions/workflows/ci.yml?query=branch%3Amain)
 [![ansible-core](https://img.shields.io/badge/ansible--core-2.21.6-blue)](https://docs.ansible.com/)
 [![ansible-lint](https://img.shields.io/badge/ansible--lint-production%20profile-blue)](https://ansible.readthedocs.io/projects/lint/profiles/)
 [![Molecule](https://img.shields.io/badge/tested%20with-Molecule-blue)](https://ansible.readthedocs.io/projects/molecule/)
@@ -9,7 +10,7 @@ Ansible playbooks and roles that I use to practice infrastructure automation and
 
 ## What this repository demonstrates
 
-- **Standards that are written down and enforced.** Naming, variables, tasks and secrets follow [docs/standards.md](docs/standards.md). `ansible-lint` (production profile) and `yamllint` check them on every commit.
+- **Standards that are written down and enforced.** Naming, variables, tasks and secrets follow [docs/standards.md](docs/standards.md). `ansible-lint` (production profile) and `yamllint` check them on every commit and in CI on every pull request.
 - **Idempotence proven by tests.** Every role has a Molecule scenario that applies it twice on Ubuntu 24.04 and 26.04 containers and fails if the second run changes anything.
 - **Secrets handled properly.** Ansible Vault in two parts (a plain reference and an encrypted value), the Vault password kept outside the repository, and pre-commit hooks that block plaintext Vault files and leaked credentials.
 - **A reproducible toolchain.** Python, ansible-core, ansible-lint, Molecule and the collections are pinned to exact versions (`uv.lock`, `requirements.yml`). Test images are pinned by digest.
@@ -82,7 +83,7 @@ Run `make` to list every target.
 - [ ] `ssh`: `sshd_config` validated with `sshd -t`
 - [ ] `docker`: official repository in deb822 format
 - [ ] `chrony` and `firewall` (they need a virtual machine target)
-- [ ] CI with GitHub Actions running lint and Molecule
+- [x] CI with GitHub Actions running lint and Molecule
 
 ## License
 

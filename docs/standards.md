@@ -73,6 +73,7 @@ The [base](../roles/base) role is the reference implementation.
 ## Tests
 
 - `make lint` and the pre-commit hooks run `yamllint`, `ansible-lint` and the Vault check.
+- CI (`.github/workflows/ci.yml`) runs `make lint` and `make test` on every pull request and push to `main` and `develop`, plus a security scan of the Dockerfile and the workflows. The `CI result` job is the single check the branch rulesets can require.
 - Each role has a Molecule scenario: create, converge, idempotence, verify, destroy.
 - `verify.yml` checks the end state of the host (package installed, file content), not the tasks that produced it.
 - The scenario overrides some defaults, which proves that the role honours its interface.
@@ -81,6 +82,7 @@ The [base](../roles/base) role is the reference implementation.
 ## Toolchain and versions
 
 - `pyproject.toml` and `uv.lock` pin Python and every tool; `requirements.yml` pins every collection; test images are pinned by digest.
+- GitHub Actions are pinned by full commit SHA, with the version in a comment, and Dependabot proposes updates. Tool images in the workflows are pinned by digest, and the uv and zizmor versions are pinned in the workflow; these are updated by hand.
 - Updates are deliberate: change the version, run `make lint test`, then record it in the changelog.
 
 ## Commits and releases
