@@ -10,7 +10,7 @@ Ansible playbooks and roles that I use to practice infrastructure automation and
 
 ## What this repository demonstrates
 
-- **Standards that are written down and enforced.** Naming, variables, tasks and secrets follow [docs/standards.md](docs/standards.md). `ansible-lint` (production profile) and `yamllint` check them on every commit and in CI on every pull request.
+- **Standards that are written down and enforced.** Naming, variables, tasks and secrets follow [docs/standards.md](docs/standards.md). `ansible-lint` (production profile) and `yamllint` check them on every commit and in CI on every pull request to `main` or `develop`.
 - **Idempotence proven by tests.** Every role has a Molecule scenario that applies it twice on Ubuntu 24.04 and 26.04 containers and fails if the second run changes anything.
 - **Secrets handled properly.** Ansible Vault in two parts (a plain reference and an encrypted value), the Vault password kept outside the repository, and pre-commit hooks that block plaintext Vault files and leaked credentials.
 - **A reproducible toolchain.** Python, ansible-core, ansible-lint, Molecule and the collections are pinned to exact versions (`uv.lock`, `requirements.yml`). Test images are pinned by digest.
@@ -24,7 +24,16 @@ Ansible playbooks and roles that I use to practice infrastructure automation and
 ├── requirements.yml            # collections, pinned
 ├── pyproject.toml / uv.lock    # Python toolchain, pinned
 ├── Makefile                    # setup, lint, test, lab and converge targets
-├── docs/standards.md           # the standards, with the reason behind each one
+├── .github/                    # CI workflow and Dependabot configuration
+├── docs/
+│   ├── README.md               # index of the documentation (Brazilian Portuguese)
+│   ├── standards.md            # the standards, with the reason behind each one
+│   ├── arquitetura/            # architecture (arc42)
+│   ├── pipelines/              # CI pipeline
+│   ├── runbooks/               # operating procedures
+│   ├── decisoes/               # architecture decision records (ADRs)
+│   ├── diagramas/              # C4 diagrams (draw.io) and their model
+│   └── portal.html             # single-page portal, generated: do not edit by hand
 ├── inventories/
 │   └── lab/                    # one folder per environment
 │       ├── hosts.yml
@@ -40,6 +49,17 @@ Ansible playbooks and roles that I use to practice infrastructure automation and
 ├── tests/images/ubuntu/        # test image: Ubuntu with systemd
 └── scripts/                    # helper scripts used by the hooks
 ```
+
+## Documentation
+
+The technical documentation is in Brazilian Portuguese, except [docs/standards.md](docs/standards.md).
+
+- [Index](docs/README.md): one line per document.
+- [Architecture](docs/arquitetura/arquitetura.md): context and container diagrams, quality scenarios and known risks.
+- [CI pipeline](docs/pipelines/ci.md): jobs, triggers and why the workflow is built this way.
+- [Runbooks](docs/runbooks/): lab, Vault, Molecule, pinned versions and CI failures.
+- [Decisions](docs/decisoes/): seven architecture decision records.
+- [Portal](docs/portal.html): all of the above in a single page. It is generated; regenerate it instead of editing it.
 
 ## Quick start
 
@@ -83,7 +103,7 @@ Run `make` to list every target.
 - [ ] `ssh`: `sshd_config` validated with `sshd -t`
 - [ ] `docker`: official repository in deb822 format
 - [ ] `chrony` and `firewall` (they need a virtual machine target)
-- [x] CI with GitHub Actions running lint and Molecule
+- [x] CI with GitHub Actions running lint, Molecule and security checks
 
 ## License
 
