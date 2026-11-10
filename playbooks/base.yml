@@ -1,0 +1,8 @@
+---
+- name: Apply the baseline to every host
+  hosts: all
+  become: true
+  roles:
+    - role: base
+      tags:
+        - base

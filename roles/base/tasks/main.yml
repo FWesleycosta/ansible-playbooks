@@ -1,0 +1,13 @@
+---
+- name: Check that the platform is supported
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['os_family'] == 'Debian'
+    fail_msg: "The base role supports Debian-family hosts only, found {{ ansible_facts['os_family'] }}."
+    quiet: true
+
+- name: Install the base packages
+  ansible.builtin.import_tasks: install.yml
+
+- name: Configure the timezone and the MOTD
+  ansible.builtin.import_tasks: configure.yml

@@ -1,0 +1,41 @@
+---
+# Checks the end state of the host, not the tasks that produced it.
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Collect the installed packages
+      ansible.builtin.package_facts:
+        manager: apt
+
+    - name: Check that the default and the extra packages are installed
+      ansible.builtin.assert:
+        that:
+          - item in ansible_facts['packages']
+        fail_msg: "Package {{ item }} is not installed."
+        quiet: true
+      loop: "{{ ['ca-certificates', 'curl', 'tzdata'] + base_packages_extra }}"
+
+    - name: Read the /etc/localtime link
+      ansible.builtin.stat:
+        path: /etc/localtime
+      register: verify_localtime
+
+    - name: Read /etc/timezone
+      ansible.builtin.slurp:
+        src: /etc/timezone
+      register: verify_timezone_file
+
+    - name: Read /etc/motd
+      ansible.builtin.slurp:
+        src: /etc/motd
+      register: verify_motd
+
+    - name: Check the timezone and the MOTD
+      ansible.builtin.assert:
+        that:
+          - verify_localtime.stat.islnk
+          - verify_localtime.stat.lnk_target == '/usr/share/zoneinfo/' ~ base_timezone
+          - (verify_timezone_file.content | b64decode | trim) == base_timezone
+          - base_motd_message in (verify_motd.content | b64decode)
+        quiet: true

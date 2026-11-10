@@ -1,0 +1,30 @@
+# Older projects kept in this folder, outside this repository
+ansible-hardening/
+ansible-scripts/
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+
+# Python toolchain (recreated with `make setup`)
+.venv/
+__pycache__/
+
+# Ansible runtime: collections installed from requirements.yml, caches, retry files
+.ansible/
+.cache/
+*.retry
+
+# Secrets and credentials: never versioned
+.env
+.env.*
+.vault-pass*
+*vault-password*
+*vault_pass*
+*.pem
+*.key
+id_rsa*
+id_ecdsa*
+id_ed25519*
+!*.pub

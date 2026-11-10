@@ -1,0 +1,7 @@
+---
+# Variables shared by every host of the lab environment.
+base_timezone: America/Sao_Paulo
+
+# Secrets are referenced here and stored encrypted in vault.yml (same folder).
+# This one is a fake value that only demonstrates the pattern.
+lab_demo_api_token: "{{ vault_lab_demo_api_token }}"

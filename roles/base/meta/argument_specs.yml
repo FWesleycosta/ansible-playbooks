@@ -1,0 +1,30 @@
+---
+# Validated by Ansible when the role starts: a wrong type fails before any change.
+argument_specs:
+  main:
+    short_description: Baseline for Debian-family hosts
+    description:
+      - Installs essential packages, sets the timezone and writes the MOTD.
+    author:
+      - Wesley Costa
+    options:
+      base_packages:
+        description: Packages installed on every host. Overriding it replaces the whole list.
+        type: list
+        elements: str
+      base_packages_extra:
+        description: Extra packages added to base_packages, usually set per group or host.
+        type: list
+        elements: str
+      base_apt_cache_valid_time:
+        description: Age of the apt cache, in seconds, before it is refreshed.
+        type: int
+      base_timezone:
+        description: IANA timezone name, for example America/Sao_Paulo.
+        type: str
+      base_motd_enabled:
+        description: Write /etc/motd with base_motd_message.
+        type: bool
+      base_motd_message:
+        description: Message written to /etc/motd.
+        type: str

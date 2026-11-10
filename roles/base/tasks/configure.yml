@@ -1,0 +1,39 @@
+---
+- name: Look up the timezone in the zoneinfo database
+  ansible.builtin.stat:
+    path: "/usr/share/zoneinfo/{{ base_timezone }}"
+  register: __base_zoneinfo
+
+- name: Fail when the timezone is unknown
+  ansible.builtin.assert:
+    that:
+      - __base_zoneinfo.stat.exists
+    fail_msg: "Unknown timezone '{{ base_timezone }}': /usr/share/zoneinfo/{{ base_timezone }} does not exist."
+    quiet: true
+
+# Same result as timedatectl on Debian-family hosts, without depending on D-Bus,
+# so the role behaves the same on virtual machines and in test containers.
+- name: Point /etc/localtime to the timezone
+  ansible.builtin.file:
+    src: "/usr/share/zoneinfo/{{ base_timezone }}"
+    dest: /etc/localtime
+    state: link
+    force: true
+
+# Kept for software that still reads the timezone name from this file.
+- name: Write the timezone name to /etc/timezone
+  ansible.builtin.copy:
+    content: "{{ base_timezone }}\n"
+    dest: /etc/timezone
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Write the MOTD
+  ansible.builtin.template:
+    src: motd.j2
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: "0644"
+  when: base_motd_enabled

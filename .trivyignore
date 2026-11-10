@@ -1,0 +1,4 @@
+# DS-0002 (image runs as root): accepted for tests/images/ubuntu/Dockerfile only.
+# That image simulates a virtual machine for Molecule and the lab, systemd must be PID 1,
+# and it is never deployed. Any other Dockerfile added here must run as a non-root user.
+DS-0002

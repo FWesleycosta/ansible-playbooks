@@ -1,0 +1,22 @@
+---
+# Public interface of the role. Every variable is documented in meta/argument_specs.yml.
+
+# Packages installed on every host. Overriding it replaces the whole list.
+base_packages:
+  - ca-certificates
+  - curl
+  - htop
+  - tzdata
+
+# Extra packages for a group or a host, added to base_packages.
+base_packages_extra: []
+
+# Age of the apt cache, in seconds, before it is refreshed.
+base_apt_cache_valid_time: 3600
+
+# IANA timezone name, as found under /usr/share/zoneinfo.
+base_timezone: Etc/UTC
+
+# Write /etc/motd with base_motd_message.
+base_motd_enabled: true
+base_motd_message: This host is managed by Ansible. Manual changes may be overwritten.

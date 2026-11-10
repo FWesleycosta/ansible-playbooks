@@ -1,0 +1,25 @@
+---
+# Strict YAML style, aligned with what ansible-lint expects from yamllint.
+extends: default
+
+ignore: |
+  .venv/
+  .ansible/
+  .cache/
+  ansible-hardening/
+  ansible-scripts/
+  **/vault.yml
+
+rules:
+  braces:
+    max-spaces-inside: 1
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: false
+  line-length:
+    max: 160
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+  truthy:
+    allowed-values: ["true", "false"]

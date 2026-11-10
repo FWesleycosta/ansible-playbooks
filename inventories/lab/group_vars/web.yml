@@ -1,0 +1,5 @@
+---
+# Group variables override group "all": the web hosts get a different MOTD and one more package.
+base_motd_message: Lab web server. Managed by Ansible; manual changes may be overwritten.
+base_packages_extra:
+  - jq

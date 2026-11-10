@@ -1,0 +1,6 @@
+---
+# Collections pinned to exact versions. Install with `make setup`.
+collections:
+  # Docker connection plugin for the lab and the Molecule Docker driver.
+  - name: community.docker
+    version: 5.4.0

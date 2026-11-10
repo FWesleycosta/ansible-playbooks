@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: Wesley Costa
+  description: Baseline for Debian-family hosts - essential packages, timezone and MOTD.
+  license: MIT
+  min_ansible_version: "2.21"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+        - resolute
+  galaxy_tags:
+    - baseline
+    - packages
+    - timezone
+    - motd
+dependencies: []

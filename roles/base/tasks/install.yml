@@ -1,0 +1,7 @@
+---
+- name: Install the base and extra packages
+  ansible.builtin.apt:
+    name: "{{ base_packages + base_packages_extra }}"
+    state: present
+    update_cache: true
+    cache_valid_time: "{{ base_apt_cache_valid_time }}"

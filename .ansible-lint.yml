@@ -1,0 +1,12 @@
+---
+# Strictest built-in profile. Any skip added later needs a comment with the reason.
+profile: production
+
+exclude_paths:
+  - .venv/
+  - .ansible/
+  - .cache/
+  - ansible-hardening/
+  - ansible-scripts/
+  # Encrypted with ansible-vault: unreadable for the linter, checked by scripts/check-vault-encrypted.sh.
+  - "**/vault.yml"

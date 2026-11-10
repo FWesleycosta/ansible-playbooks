@@ -1,0 +1,28 @@
+---
+# Local hooks only: they run the toolchain pinned in uv.lock, so no hook code is downloaded.
+# Install once per clone with `make hooks`.
+repos:
+  - repo: local
+    hooks:
+      - id: vault-encrypted
+        name: Vault files are encrypted
+        entry: scripts/check-vault-encrypted.sh
+        language: script
+        files: (^|/)vault\.ya?ml$
+      - id: gitleaks
+        name: gitleaks (secrets in staged changes)
+        entry: gitleaks git --pre-commit --staged --redact --no-banner
+        language: system
+        pass_filenames: false
+      - id: yamllint
+        name: yamllint
+        entry: uv run --frozen yamllint --strict
+        language: system
+        types: [yaml]
+        exclude: (^|/)vault\.ya?ml$
+      - id: ansible-lint
+        name: ansible-lint
+        entry: uv run --frozen ansible-lint
+        language: system
+        pass_filenames: false
+        files: \.(ya?ml|j2)$

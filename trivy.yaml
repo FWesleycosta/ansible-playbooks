@@ -1,0 +1,9 @@
+---
+# Read by Trivy from the repository root. Skips folders that are not part of this repository's code.
+scan:
+  skip-dirs:
+    - .venv
+    - .ansible
+    - .cache
+    - ansible-hardening
+    - ansible-scripts

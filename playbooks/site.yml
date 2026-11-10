@@ -1,0 +1,4 @@
+---
+# Entry point: runs every playbook in order. Run a single layer with --tags.
+- name: Apply the baseline
+  ansible.builtin.import_playbook: base.yml
