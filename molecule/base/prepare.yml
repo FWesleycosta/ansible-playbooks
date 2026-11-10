@@ -1,0 +1,17 @@
+---
+# Puts the host in the state of an image built minutes ago on a Linux runner: no apt
+# package lists, with a recent /var/lib/apt/lists mtime. The role must still install its
+# packages; without the check in tasks/install.yml, apt skips the update and finds nothing.
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Make the empty apt lists look freshly updated
+      ansible.builtin.file:
+        path: /var/lib/apt/lists
+        state: touch
+        owner: root
+        group: root
+        mode: "0755"
+        modification_time: now
+        access_time: now

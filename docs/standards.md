@@ -78,6 +78,7 @@ The [base](../roles/base) role is the reference implementation.
 - Each role has a Molecule scenario: create, converge, idempotence, verify, destroy.
 - `verify.yml` checks the end state of the host (package installed, file content), not the tasks that produced it.
 - The scenario overrides some defaults, which proves that the role honours its interface.
+- `prepare.yml` puts the host in the state of a freshly built image (no apt package lists, with a recent `/var/lib/apt/lists` mtime), so the local run and CI exercise the same path whatever the Docker storage driver.
 - Containers cannot test kernel parameters, firewalls, auditd or the system clock. Roles that need them get a virtual machine scenario.
 
 ## Toolchain and versions
