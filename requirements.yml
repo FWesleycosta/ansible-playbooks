@@ -4,3 +4,6 @@ collections:
   # Docker connection plugin for the lab and the Molecule Docker driver.
   - name: community.docker
     version: 5.4.0
+  # Required by the Molecule Docker driver (molecule-plugins): its create playbook references ansible.posix.synchronize.
+  - name: ansible.posix
+    version: 2.2.2

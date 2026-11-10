@@ -18,6 +18,7 @@ The [base](../roles/base) role is the reference implementation.
 - `handlers/` exists only when the role restarts or reloads something.
 - `vars/main.yml` holds only internal constants (for example, values per OS family). It has high precedence, so anything a user may override goes to `defaults/main.yml`.
 - Molecule runs from the repository root, which is its project directory: its prerun installs `requirements.yml` from there, without symlinks in the home directory. Molecule runs Ansible with an `ansible.cfg` it generates, so each `molecule.yml` repeats `roles_path` and `collections_path` under `ansible.cfg.defaults`.
+- The Molecule `dependency` step is disabled, and that step is the only one that installs the collections required by the Molecule Docker driver. `requirements.yml` therefore pins them too (`community.docker` and `ansible.posix`); a collection missing there fails in CI even when it exists in a local `.ansible/collections` or `~/.ansible/collections`.
 
 ## Naming
 
