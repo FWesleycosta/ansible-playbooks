@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ansible-playbooks
+  title: Ansible Playbooks
+  description: "Playbooks e roles do Ansible para praticar automação de infraestrutura, com padrões documentados, testes no Molecule e laboratório local em contêineres."
+  tags:
+    - ansible
+    - molecule
+    - linux
+  annotations:
+    github.com/project-slug: FWesleycosta/ansible-playbooks
+spec:
+  type: library
+  lifecycle: experimental
+  owner: fwesleycosta
+  system: automacao
